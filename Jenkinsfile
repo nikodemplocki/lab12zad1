@@ -36,10 +36,6 @@ pipeline {
     }
 
     post {
-        always {
-            // Clean up or additional steps to run after pipeline completes
-        }
-
         success {
             echo 'Pipeline succeeded!'
         }
