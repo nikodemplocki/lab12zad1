@@ -2,33 +2,39 @@ pipeline {
     agent any
 
     triggers {
-        githubPush()
+        scm '* * * * *'  // Trigger pipeline on every commit
     }
 
     stages {
-        stage('Setup') {
-            steps {
-                sh '''
-                python3 -m venv venv
-                . venv/bin/activate
-                pip install unittest-xml-reporting
-                '''
-            }
-        }
         stage('Test') {
             steps {
-                sh '''
-                . venv/bin/activate
-                python -m xmlrunner discover -o test-reports
-                '''
+                script {
+                    sh 'python3 -m unittest test_calculator.py'  // Run unit tests
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Additional deployment steps can go here if needed
+                    echo 'Deployment completed successfully'
+                }
             }
         }
     }
 
     post {
         always {
-            junit 'test-reports/*.xml'
-            archiveArtifacts artifacts: 'test-reports/*.xml', allowEmptyArchive: true
+            // Clean up or additional steps to run after pipeline completes
+        }
+
+        success {
+            echo 'Pipeline succeeded!'
+        }
+
+        failure {
+            echo 'Pipeline failed :('
         }
     }
 }
