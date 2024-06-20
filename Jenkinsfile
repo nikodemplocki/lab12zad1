@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        scm '* * * * *'  // Trigger pipeline on every commit
+        cron('* * * * *')  // Trigger pipeline on every minute
     }
 
     stages {
