@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the repository before running any other steps
-                git 'https://github.com/nikodemplocki/lab12zad1.git'
+                git branch: 'main', url: 'https://github.com/nikodemplocki/lab12zad1.git'
             }
         }
 
