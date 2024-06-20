@@ -1,43 +1,45 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/nikodemplocki/lab12zad1.git'
-            }
-        }
+    triggers {
+        pollSCM('H/5 * * * *') 
+    }
 
-        stage('Test') {
+    stages {
+        stage('Setup Environment') {
             steps {
                 script {
-                    // Utwórz wirtualne środowisko Pythona
-                    sh 'python3 -m venv myenv'
-
-                    // Aktywuj wirtualne środowisko i zainstaluj zależności
-                    sh 'source myenv/bin/activate && pip install -r requirements.txt'
-
-                    // Uruchom testy jednostkowe
-                    sh 'source myenv/bin/activate && python3 -m unittest test_calculator.py'
+                
+                    sh '''
+                    if ! command -v python3 &> /dev/null; then
+                        echo "Installing Python 3..."
+                        sudo apt-get update
+                        sudo apt-get install -y python3
+                        sudo ln -sf /usr/bin/python3 /usr/bin/python
+                    fi
+                    python --version
+                    '''
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Run Tests') {
             steps {
-                echo 'Deployment completed successfully'
-                // Dodatkowe kroki wdrażania, jeśli są potrzebne
+               
+                sh 'python -m unittest test_calculator.py'
             }
         }
     }
 
     post {
-        success {
-            echo 'Pipeline succeeded!'
+        always {
+            echo 'This will always run'
         }
-
+        success {
+            echo 'Build was a success!'
+        }
         failure {
-            echo 'Pipeline failed :('
+            echo 'Build failed!'
         }
     }
 }
