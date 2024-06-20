@@ -6,17 +6,22 @@ pipeline {
     }
 
     stages {
+        stage('Setup') {
+            steps {
+                sh 'pip3 install unittest-xml-reporting'
+            }
+        }
         stage('Test') {
             steps {
-                sh 'python3 -m unittest discover'
+                sh 'python3 -m xmlrunner discover -o test-reports'
             }
         }
     }
 
     post {
         always {
-            junit '**/test-*.xml'
-            archiveArtifacts artifacts: '**/test-*.xml', allowEmptyArchive: true
+            junit 'test-reports/*.xml'
+            archiveArtifacts artifacts: 'test-reports/*.xml', allowEmptyArchive: true
         }
     }
 }
