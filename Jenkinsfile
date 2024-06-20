@@ -1,36 +1,32 @@
 pipeline {
     agent any
 
-    triggers {
-        cron('* * * * *')  // Trigger pipeline on every minute
-    }
-
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the repository before running any other steps
-                git branch: 'main', url: 'https://github.com/nikodemplocki/lab12zad1.git'
+                git 'https://github.com/nikodemplocki/lab12zad1.git'
             }
         }
 
         stage('Test') {
             steps {
                 script {
-                    // Install dependencies if needed
-                    sh 'pip install -r requirements.txt'
+                    // Utwórz wirtualne środowisko Pythona
+                    sh 'python3 -m venv myenv'
 
-                    // Run unit tests
-                    sh 'python3 -m unittest test_calculator.py'
+                    // Aktywuj wirtualne środowisko i zainstaluj zależności
+                    sh 'source myenv/bin/activate && pip install -r requirements.txt'
+
+                    // Uruchom testy jednostkowe
+                    sh 'source myenv/bin/activate && python3 -m unittest test_calculator.py'
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                script {
-                    // Additional deployment steps can go here if needed
-                    echo 'Deployment completed successfully'
-                }
+                echo 'Deployment completed successfully'
+                // Dodatkowe kroki wdrażania, jeśli są potrzebne
             }
         }
     }
