@@ -8,12 +8,19 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                sh 'pip3 install unittest-xml-reporting'
+                sh '''
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install unittest-xml-reporting
+                '''
             }
         }
         stage('Test') {
             steps {
-                sh 'python3 -m xmlrunner discover -o test-reports'
+                sh '''
+                . venv/bin/activate
+                python -m xmlrunner discover -o test-reports
+                '''
             }
         }
     }
